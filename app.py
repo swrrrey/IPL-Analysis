@@ -39,8 +39,16 @@ def load_data():
     matches_path = "data/matches.csv"
     deliveries_path = "data/deliveries.csv"
     
+    # Auto-generate data if missing
     if not os.path.exists(matches_path) or not os.path.exists(deliveries_path):
-        return None, None
+        with st.status("🛠️ Data not found. Generating realistic IPL dataset...", expanded=True) as status:
+            try:
+                import generate_data
+                generate_data.main()
+                status.update(label="✅ Data generation complete!", state="complete", expanded=False)
+            except Exception as e:
+                st.error(f"Failed to generate data: {e}")
+                return None, None
         
     matches = pd.read_csv(matches_path)
     deliveries = pd.read_csv(deliveries_path)
